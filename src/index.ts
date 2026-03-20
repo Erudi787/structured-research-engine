@@ -5,3 +5,5 @@ export { loadConfig } from "./utils/config.js";
 export { RateLimiter } from "./utils/rate-limiter.js";
 export { buildQuery, type QueryBuilderResult } from "./core/query-builder.js";
 export { callPerplexity, createPerplexityClient, type PerplexityResponse } from "./core/perplexity.js";
+export { parsePerplexityResponse, isParseError, type ParseResult, type ParseError } from "./core/parser.js";
+export { formatCitation, buildBibliographyFromUrls, type RawCitation } from "./formatters/citations.js";
