@@ -6,6 +6,7 @@ export { RateLimiter } from "./utils/rate-limiter.js";
 export { buildQuery, type QueryBuilderResult } from "./core/query-builder.js";
 export { callPerplexity, createPerplexityClient, type PerplexityResponse } from "./core/perplexity.js";
 export { parsePerplexityResponse, isParseError, type ParseResult, type ParseError } from "./core/parser.js";
+export { verifyCitations, type VerificationResult } from "./core/validator.js";
 export { formatCitation, buildBibliographyFromUrls, type RawCitation } from "./formatters/citations.js";
 export { formatPretty } from "./formatters/pretty.js";
 
@@ -19,6 +20,7 @@ import { RateLimiter } from "./utils/rate-limiter.js";
 import { buildQuery } from "./core/query-builder.js";
 import { callPerplexity, createPerplexityClient } from "./core/perplexity.js";
 import { parsePerplexityResponse, isParseError } from "./core/parser.js";
+import { verifyCitations } from "./core/validator.js";
 import { formatPretty } from "./formatters/pretty.js";
 
 function parseArgs(argv: string[]): Record<string, string> {
@@ -138,18 +140,25 @@ async function runCli(): Promise<void> {
     }
   }
 
+  // Verify citations
+  console.error(`Verifying ${parsed.output.bibliography.length} citation(s)...\n`);
+  const { output, verificationWarnings } = await verifyCitations(parsed.output);
+  for (const w of verificationWarnings) {
+    console.error(`Warning: ${w}`);
+  }
+
   // Write JSON to output/
   fs.mkdirSync("output", { recursive: true });
   const filename = `${formatTimestamp()}-${slugify(input.title)}.json`;
   const filepath = path.join("output", filename);
-  fs.writeFileSync(filepath, JSON.stringify(parsed.output, null, 2), "utf8");
+  fs.writeFileSync(filepath, JSON.stringify(output, null, 2), "utf8");
   console.error(`\nSaved to: ${filepath}\n`);
 
   // Display
   if (outputMode === "pretty") {
-    process.stdout.write(formatPretty(parsed.output));
+    process.stdout.write(formatPretty(output));
   } else {
-    process.stdout.write(JSON.stringify(parsed.output, null, 2) + "\n");
+    process.stdout.write(JSON.stringify(output, null, 2) + "\n");
   }
 }
 
