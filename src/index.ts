@@ -9,6 +9,7 @@ export { parsePerplexityResponse, isParseError, type ParseResult, type ParseErro
 export { verifyCitations, type VerificationResult } from "./core/validator.js";
 export { formatCitation, buildBibliographyFromUrls, type RawCitation } from "./formatters/citations.js";
 export { formatPretty } from "./formatters/pretty.js";
+export { createServer, type ServerDeps } from "./server.js";
 
 // ─── CLI ─────────────────────────────────────────────────────────────────────
 
